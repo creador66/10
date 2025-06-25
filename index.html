@@ -1,470 +1,613 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="es">
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>PLANTILLA | WEB 10</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FinanzApp</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<style>
+:root{--primary:#6200ee;--on-primary:#fff;--surface:#fff;--on-surface:#1e1e1e;
+--background:#f5f5f5;--surface-elevated:rgba(0,0,0,0.1);
+--accent-income:#03dac6;--accent-expense:#cf6679;--radius:16px;
+--font:'Roboto',sans-serif;--transition:0.3s ease;}
+*{margin:0;padding:0;box-sizing:border-box;font-family:var(--font);}
+body{background:var(--background);color:var(--on-surface);
+display:flex;flex-direction:column;min-height:100vh;}
+.btn{background:var(--primary);color:var(--on-primary);border:none;
+border-radius:var(--radius);padding:8px 12px;font-weight:500;
+display:inline-flex;align-items:center;gap:4px;cursor:pointer;
+transition:transform var(--transition),box-shadow var(--transition);
+box-shadow:0 2px 4px var(--surface-elevated);}
+.btn:hover{transform:translateY(-2px);box-shadow:0 4px 8px var(--surface-elevated);}
+header{background:var(--primary);color:var(--on-primary);
+padding:16px;display:flex;align-items:center;justify-content:center;
+box-shadow:0 2px 4px var(--surface-elevated);}header h1{font-size:1.25rem;font-weight:500;}
+main{flex:1;padding:16px;overflow-y:auto;}
+.section{margin-bottom:24px;}
+.section-header{display:flex;justify-content:space-between;
+align-items:center;margin-bottom:12px;}
+.section-header h2{font-size:1.1rem;font-weight:500;}
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);
+gap:12px;margin-bottom:20px;}
+.card{position:relative;background:var(--surface);
+border-radius:var(--radius);padding:16px;
+box-shadow:0 1px 4px var(--surface-elevated);
+transition:box-shadow var(--transition),transform var(--transition);}
+.card:hover{transform:translateY(-2px);box-shadow:0 4px 8px var(--surface-elevated);}
+.card .mov-btn{position:absolute;top:8px;right:8px;
+background:none;border:none;cursor:pointer;color:#888;font-size:20px;
+transition:color var(--transition);}
+.card .mov-btn:hover{color:var(--primary);}
+.card-title{font-size:0.9rem;color:#666;margin-bottom:8px;}
+.card-value{font-size:1.25rem;font-weight:600;}
+.loan-meta{font-size:0.8rem;color:#777;margin-top:4px;}
+#recent-transactions,
+#account-movements-list,
+#loan-history-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
 
-  <!-- Bootstrap -->
-  <link href="css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="css/font-awesome.min.css" />
-  <link rel="stylesheet" href="js/fancybox/jquery.fancybox.css" type="text/css" media="screen" />
-  <link rel="stylesheet" type="text/css" href="css/isotope.css" media="screen" />
-  <link rel="stylesheet" href="css/style.css" />
- 
+.tx-item{background:var(--surface);border-radius:var(--radius);
+box-shadow:0 1px 3px var(--surface-elevated);padding:12px;
+display:flex;flex-direction:column;justify-content:space-between;
+aspect-ratio:1/1;transition:box-shadow var(--transition),transform var(--transition);}
+.tx-item:hover{transform:translateY(-1px);box-shadow:0 3px 6px var(--surface-elevated);}
+.tx-info .name{font-weight:500;}
+.tx-info .meta{font-size:0.8rem;color:#777;margin-top:4px;}
+.tx-amount{font-weight:600;margin-top:8px;text-align:right;}
+.tx-amount.income{color:var(--accent-income);}
+.tx-amount.expense{color:var(--accent-expense);}
+.tx-actions{display:flex;justify-content:flex-end;margin-top:8px;}
+.tx-actions button{background:none;border:none;cursor:pointer;color:#888;
+margin-left:8px;transition:color var(--transition);}
+.tx-actions button:hover{color:var(--primary);}
+.empty{text-align:center;color:#aaa;padding:40px 0;}
+.empty .material-icons{font-size:48px;margin-bottom:8px;}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,0.5);
+display:none;justify-content:center;align-items:center;padding:16px;}
+.modal.active{display:flex;}
+.modal-content{background:var(--surface);border-radius:var(--radius);
+width:100%;max-width:400px;padding:24px;
+box-shadow:0 4px 12px var(--surface-elevated);
+max-height:90vh;overflow-y:auto;}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+.modal-header h3{font-size:1.1rem;font-weight:500;}
+.close-btn{background:none;border:none;font-size:1.5rem;cursor:pointer;color:#777;}
+.form-group{margin-bottom:16px;}
+.form-group label{display:block;margin-bottom:6px;font-size:0.9rem;color:#444;}
+.form-group input,.form-group select{width:100%;padding:8px 12px;
+border:1px solid #ccc;border-radius:var(--radius);font-size:1rem;
+transition:border-color var(--transition);}
+.form-group input:focus,.form-group select:focus{outline:none;border-color:var(--primary);}
+#notification{position:fixed;top:16px;left:50%;
+transform:translateX(-50%);background:var(--surface);
+padding:12px 24px;border-radius:var(--radius);
+box-shadow:0 2px 6px var(--surface-elevated);
+display:none;align-items:center;gap:8px;}
+#notification.show{display:flex;}
+#notification.error{border-left:4px solid var(--accent-expense);}
+nav.bottom-nav{position:sticky;bottom:0;background:var(--background);
+display:flex;align-items:center;justify-content:space-between;
+padding:8px;box-shadow:0 -2px 4px var(--surface-elevated);gap:12px;}
+nav.bottom-nav .btn{flex:none;justify-content:center;flex-direction:column;
+padding:8px 12px;font-size:0.8rem;}
+nav.bottom-nav .material-icons{font-size:24px;margin-bottom:4px;}
+.balance-bottom{font-size:1rem;font-weight:600;white-space:nowrap;}
+</style>
 </head>
-
 <body>
-  <div class="container">
-    <div class="row">
-      <div class="page">
-        <header id="header">
-          <ul class="nav nav-tabs" role="tablist">
-            <div class="box">
-              <div class="profile_photo">
-                <img src="img/1.jpg" alt="" class="img-responsive">
-              </div>
-              <div class="profile_name">
-                <div class="author_name">
-                  <div class="profile_inner">
-                    <!-- You can edit name and lastname -->
-                    <a href="index.html">
-                      <div class="name">ProOnliPc</div>
-                    </a>
-                    <div class="pos">Gráfico &amp;  Diseño web</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <li class="profile"><a href="#profile" role="tab" data-toggle="tab"><span i class="fa fa-align-justify"></i></span></a></li>
-            <li class="contacts"><a href="#contacts" role="tab" data-toggle="tab"><span i class="fa fa-folder-open"></span></a></li>
-            <li class="portfolio"><a href="#portfolio" role="tab" data-toggle="tab"><span i class="fa fa-list"></span></a></li>
-            <li class="dribbble"><a href="#"><span><i class="fa fa-dribbble"></i></span></a></li>
-            <li class="twitter"><a href="#"><span><i class="fa fa-twitter"></i></span></a></li>
-            <li class="facebook"><a href="#"><span><i class="fa fa-facebook"></i></span></a></li>
 
-          </ul>
-        </header>
-        <!-- /Header -->
-      </div>
+<header><h1>FinanzApp</h1></header>
+
+<main>
+  <div class="section">
+    <div class="section-header">
+      <h2>Tus Cuentas</h2>
+    </div>
+    <div class="grid-2" id="accounts-container">
+      <div class="empty"><span class="material-icons">account_balance</span><p>No tienes cuentas</p></div>
     </div>
   </div>
 
+  <div class="section">
+    <div class="section-header">
+      <h2>Tus Préstamos</h2>
+      <button class="btn" onclick="openModal('loan')"><span class="material-icons">payments</span> Nuevo Préstamo</button>
+    </div>
+    <div class="grid-2" id="loans-container">
+      <div class="empty"><span class="material-icons">payments</span><p>No tienes préstamos</p></div>
+    </div>
+  </div>
 
-
-
-
-  <!-- Tab panes -->
-  <div class="container">
-    <div class="row">
-      <div class="tab-content">
-        <div class="tab-pane" id="profile">
-          <div class="panel-group" id="accordion">
-            <div class="panel panel-default">
-              <div class="panel-heading">
-                <h4 class="panel-title">
-								<a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
-								employment
-								</a>
-							  </h4>
-              </div>
-              <div id="collapseOne" class="panel-collapse collapse in">
-                <div class="container">
-                  <div class="">
-                    <div class="feature1">
-                      <div class="col-md-4">
-                        <div class="feature">
-                          <div class="ficon">
-                            <i class="fa fa-mobile-phone fa-3x"></i>
-                          </div>
-                          <div class="details_exp">
-                            <h3>art director </h3>
-                            <p>We design beautiful responsive websites and iOS apps focusing on design, content and a great user experience.</p>
-                            <a href="#">more details</a>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="col-md-4">
-                        <div class="feature">
-                          <div class="ficon">
-                            <i class="fa fa-mobile-phone fa-3x"></i>
-                          </div>
-                          <div class="details_exp">
-                            <h3>senior designer </h3>
-                            <p>We design beautiful responsive websites and iOS apps focusing on design, content and a great user experience.</p>
-                            <a href="#">more details</a>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col-md-4">
-                        <div class="feature">
-                          <div class="ficon">
-                            <i class="fa fa-mobile-phone fa-3x"></i>
-                          </div>
-                          <div class="details_exp">
-                            <h3>Web Designer </h3>
-                            <p>We design beautiful responsive websites and iOS apps focusing on design, content and a great user experience.</p>
-                            <a href="#">more details</a>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="panel panel-default">
-              <div class="panel-heading">
-                <h4 class="panel-title">
-								<a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
-									education
-								</a>
-							  </h4>
-              </div>
-              <div id="collapseTwo" class="panel-collapse collapse">
-                <div class="panel-body">
-                  <div class="feature2">
-                    <div class="col-md-4">
-                      <div class="feature">
-                        <h4>2004-<span>2009</span></h4>
-                        <div class="ficon">
-                          <i class="fa fa-mobile-phone fa-3x"></i>
-                        </div>
-                        <div class="details_exp">
-                          <h3>University of Awesome</h3>
-                          <p>We design beautiful responsive websites and iOS apps focusing on design, content and a great user experience.</p>
-                          <a href="#">more details</a>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-md-4">
-                      <div class="feature">
-                        <h4>2004-<span>2009</span></h4>
-                        <div class="ficon">
-                          <i class="fa fa-mobile-phone fa-3x"></i>
-                        </div>
-                        <div class="details_exp">
-                          <h3>University of Awesome</h3>
-                          <p>We design beautiful responsive websites and iOS apps focusing on design, content and a great user experience.</p>
-                          <a href="#">more details</a>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-md-4">
-                      <div class="feature">
-                        <h4>2004-<span>2009</span></h4>
-                        <div class="ficon">
-                          <i class="fa fa-mobile-phone fa-3x"></i>
-                        </div>
-                        <div class="details_exp">
-
-                          <h3>University of Awesome</h3>
-                          <p>We design beautiful responsive websites and iOS apps focusing on design, content and a great user experience.</p>
-                          <a href="#">more details</a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="panel panel-default">
-              <div class="panel-heading">
-                <h4 class="panel-title">
-								<a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
-									skills
-								</a>
-							  </h4>
-              </div>
-              <div id="collapseThree" class="panel-collapse collapse">
-                <div class="panel-body">
-                  <div class="col-md-6">
-                    <h5 class="panel-title">
-										graphic skills
-										</h5>
-                    <div class="progress">
-                      <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
-                        <h5>adobe photoshop 60%</h5>
-                      </div>
-                    </div>
-                    <div class="progress">
-                      <div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 80%">
-                        <span class="sr-only">80% Complete (success)</span>
-                        <h5> Adobe Illustrator 80% </h5>
-                      </div>
-                    </div>
-                    <div class="progress">
-                      <div class="progress-bar progress-bar-info progress-bar-striped" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: 70%">
-                        <span class="sr-only">70% Complete</span>
-                        <h5>Adobe Indesign 70% </h5>
-                      </div>
-                    </div>
-                    <div class="progress">
-                      <div class="progress-bar progress-bar-warning progress-bar-striped" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%">
-                        <span class="sr-only">60% Complete (warning)</span>
-                        <h5>Corel Draw 60%</h5>
-                      </div>
-                    </div>
-                    <div class="progress">
-                      <div class="progress-bar progress-bar-danger progress-bar-striped" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: 80%">
-                        <span class="sr-only">80% Complete (danger)</span>
-                        <h5>3D Max 80%</h5>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="col-md-6">
-                    <h5 class="panel-title">
-										programming skills
-										</h5>
-                    <div class="progress">
-                      <div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 80%">
-                        <span class="sr-only">80% Complete (success)</span>
-                        <h5>Wordpress 80%</h5>
-                      </div>
-                    </div>
-                    <div class="progress">
-                      <div class="progress-bar progress-bar-info progress-bar-striped" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: 90%">
-                        <span class="sr-only">90% Complete</span>
-                        <h5>php 90%</h5>
-                      </div>
-                    </div>
-                    <div class="progress">
-                      <div class="progress-bar progress-bar-warning progress-bar-striped" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 85%">
-                        <span class="sr-only">85% Complete (warning)</span>
-                        <h5>javascript 90%</h5>
-                      </div>
-                    </div>
-                    <div class="progress">
-                      <div class="progress-bar progress-bar-danger progress-bar-striped" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: 97%">
-                        <span class="sr-only">97% Complete (danger)</span>
-                        <h5>html 97%</h5>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-
-        <div class="tab-pane" id="contacts">
-          <div class="">
-            <div class="col-md-12">
-              <div class="map">
-                <div id="google-map" data-latitude="40.713732" data-longitude="-74.0092704"></div>
-              </div>
-            </div>
-
-            <div class="">
-              <div class="contact-area">
-                <div class="ficon">
-                  <i class="fa fa-mobile-phone fa-3x"></i>
-                </div>
-                <div class="details">
-                  <h3>+123 456 789 111</h3><br>
-                  <h3>ProOnliPc_hidayah@gmail</h3><br>
-                  <a href=""> http://www.ProOnliPchidayah.com</a>
-                </div>
-              </div>
-            </div>
-            <div class="">
-              <div class="contact-form">
-                <h4><strong>Let's keep in touch</strong></h4>
-                <div id="sendmessage">Your message has been sent. Thank you!</div>
-                <div id="errormessage"></div>
-                <form action="" method="post" role="form" class="contactForm">
-                  <div class="form-group">
-                    <input type="text" name="name" class="form-control" id="name" placeholder="Your Name" data-rule="minlen:4" data-msg="Please enter at least 4 chars" />
-                    <div class="validation"></div>
-                  </div>
-                  <div class="form-group">
-                    <input type="email" class="form-control" name="email" id="email" placeholder="Your Email" data-rule="email" data-msg="Please enter a valid email" />
-                    <div class="validation"></div>
-                  </div>
-                  <div class="form-group">
-                    <input type="text" class="form-control" name="subject" id="subject" placeholder="Subject" data-rule="minlen:4" data-msg="Please enter at least 8 chars of subject" />
-                    <div class="validation"></div>
-                  </div>
-                  <div class="form-group">
-                    <textarea class="form-control" name="message" rows="5" data-rule="required" data-msg="Please write something for us" placeholder="Message"></textarea>
-                    <div class="validation"></div>
-                  </div>
-
-                  <div class="text-center"><button type="submit" class="btn btn-primary btn-lg">Send Message</button></div>
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="tab-pane" id="portfolio">
-          <section id="section-works" class="section appear clearfix">
-            <div class="container">
-              <div class="row mar-bot40">
-                <div class="col-md-offset-3 col-md-6">
-                  <div class="section-header">
-                    <h2>Portfolio</h2>
-                    <p>Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet consectetur, adipisci velit, sed quia non numquam.</p>
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <nav id="filter" class="col-md-12 text-center">
-                  <ul>
-                    <li><a href="#" class="current btn-theme btn-small" data-filter="*">All</a></li>
-                    <li><a href="#" class="btn-theme btn-small" data-filter=".webdesign">Web Design</a></li>
-                    <li><a href="#" class="btn-theme btn-small" data-filter=".photography">Photography</a></li>
-                    <li><a href="#" class="btn-theme btn-small" data-filter=".print">Print</a></li>
-                  </ul>
-                </nav>
-                <div class="col-md-12">
-                  <div class="row">
-                    <div class="portfolio-items isotopeWrapper clearfix" id="3">
-                      <article class="col-md-4 isotopeItem webdesign">
-                        <div class="portfolio-item">
-                          <img src="img/portfolio/img10.jpg" alt="" />
-                          <div class="portfolio-desc align-center">
-                            <div class="folio-info">
-                              <h5><a href="#">Portfolio name</a></h5>
-                              <a href="img/portfolio/img10.jpg" class="fancybox"><i class="fa fa-plus fa-2x"></i></a>
-                            </div>
-                          </div>
-                        </div>
-                      </article>
-
-                      <article class="col-md-4 isotopeItem photography">
-                        <div class="portfolio-item">
-                          <img src="img/portfolio/img11.jpg" alt="" />
-                          <div class="portfolio-desc align-center">
-                            <div class="folio-info">
-                              <h5><a href="#">Portfolio name</a></h5>
-                              <a href="img/portfolio/img11.jpg" class="fancybox"><i class="fa fa-plus fa-2x"></i></a>
-                            </div>
-                          </div>
-                        </div>
-                      </article>
-
-                      <article class="col-md-4 isotopeItem photography">
-                        <div class="portfolio-item">
-                          <img src="img/portfolio/img12.jpg" alt="" />
-                          <div class="portfolio-desc align-center">
-                            <div class="folio-info">
-                              <h5><a href="#">Portfolio name</a></h5>
-                              <a href="img/portfolio/img12.jpg" class="fancybox"><i class="fa fa-plus fa-2x"></i></a>
-                            </div>
-                          </div>
-                        </div>
-                      </article>
-
-                      <article class="col-md-4 isotopeItem print">
-                        <div class="portfolio-item">
-                          <img src="img/portfolio/img13.jpg" alt="" />
-                          <div class="portfolio-desc align-center">
-                            <div class="folio-info">
-                              <h5><a href="#">Portfolio name</a></h5>
-                              <a href="img/portfolio/img13.jpg" class="fancybox"><i class="fa fa-plus fa-2x"></i></a>
-                            </div>
-                          </div>
-                        </div>
-                      </article>
-
-                      <article class="col-md-4 isotopeItem photography">
-                        <div class="portfolio-item">
-                          <img src="img/portfolio/img14.jpg" alt="" />
-                          <div class="portfolio-desc align-center">
-                            <div class="folio-info">
-                              <h5><a href="#">Portfolio name</a></h5>
-                              <a href="img/portfolio/img14.jpg" class="fancybox"><i class="fa fa-plus fa-2x"></i></a>
-                            </div>
-                          </div>
-                        </div>
-                      </article>
-
-                      <article class="col-md-4 isotopeItem webdesign">
-                        <div class="portfolio-item">
-                          <img src="img/portfolio/img15.jpg" alt="" />
-                          <div class="portfolio-desc align-center">
-                            <div class="folio-info">
-                              <h5><a href="#">Portfolio name</a></h5>
-                              <a href="img/portfolio/img15.jpg" class="fancybox"><i class="fa fa-plus fa-2x"></i></a>
-                            </div>
-                          </div>
-                        </div>
-                      </article>
-
-                      <article class="col-md-4 isotopeItem print">
-                        <div class="portfolio-item">
-                          <img src="img/portfolio/img16.jpg" alt="" />
-                          <div class="portfolio-desc align-center">
-                            <div class="folio-info">
-                              <h5><a href="#">Portfolio name</a></h5>
-                              <a href="img/portfolio/img16.jpg" class="fancybox"><i class="fa fa-plus fa-2x"></i></a>
-                            </div>
-                          </div>
-                        </div>
-                      </article>
-
-                      <article class="col-md-4 isotopeItem photography">
-                        <div class="portfolio-item">
-                          <img src="img/portfolio/img17.jpg" alt="" />
-                          <div class="portfolio-desc align-center">
-                            <div class="folio-info">
-                              <h5><a href="#">Portfolio name</a></h5>
-                              <a href="img/portfolio/img17.jpg" class="fancybox"><i class="fa fa-plus fa-2x"></i></a>
-                            </div>
-                          </div>
-                        </div>
-                      </article>
-
-                      <article class="col-md-4 isotopeItem print">
-                        <div class="portfolio-item">
-                          <img src="img/portfolio/img18.jpg" alt="" />
-                          <div class="portfolio-desc align-center">
-                            <div class="folio-info">
-                              <h5><a href="#">Portfolio name</a></h5>
-                              <a href="img/portfolio/img18.jpg" class="fancybox"><i class="fa fa-plus fa-2x"></i></a>
-                            </div>
-                          </div>
-                        </div>
-                      </article>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-        </div>
+  <div class="section">
+    <div class="section-header">
+      <h2>Movimientos</h2>
+      <div>
+        <button class="btn" onclick="filterTransactions('all')">Todos</button>
+        <button class="btn" onclick="filterTransactions('completed')">Realizadas</button>
+        <button class="btn" onclick="filterTransactions('pending')">Pendientes</button>
       </div>
     </div>
-    <a href="#" class="download"><h2>Download CV</h2></a>
-    <a href="#" class="scrollup"><i class="fa fa-chevron-up"> </i></a>
+    <div id="recent-transactions">
+      <div class="empty"><span class="material-icons">swap_horiz</span><p>No hay movimientos</p></div>
+    </div>
+  </div>
+</main>
 
-    <footer id="footer">
-      <div class="footer_copyright">
-        Copyright &copy; ProOnliPc Theme. All rights reserved.
-        <div class="credits">
-        
-          <a href="http://www.servitecflhuaraz.com//">ProOnliPc Templates</a> by <a href="http://www.servitecflhuaraz.com/">ProOnliPc</a>
-        </div>
+<nav class="bottom-nav">
+  <button class="btn" onclick="openModal('transaction')"><span class="material-icons">attach_money</span> Movimiento</button>
+  <div class="balance-bottom">Saldo: <span id="total-balance-bottom">$0.00</span></div>
+  <button class="btn" onclick="openModal('account')"><span class="material-icons">account_balance</span> Nueva Cuenta</button>
+</nav>
+
+<div class="modal" id="generic-modal">
+  <div class="modal-content">
+    <div class="modal-header"><h3 class="modal-title" id="modal-title"></h3><button class="close-btn" onclick="closeModal()">&times;</button></div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer" id="modal-footer"></div>
+  </div>
+</div>
+
+<div id="notification"><span id="notification-message"></span></div>
+<script>
+(() => {
+  // --- Datos en memoria ---
+  let accounts             = JSON.parse(localStorage.accounts     || '[]'),
+      transactions         = JSON.parse(localStorage.transactions || '[]'),
+      loans                = JSON.parse(localStorage.loans        || '[]'),
+      currentFilter        = 'all',
+      editingAccountId,
+      editingTransactionId,
+      editingLoanId,
+      editingPaymentId,
+      itemToDelete;
+
+  const acctTypes = {
+    cash:          { icon:'account_balance_wallet', label:'Efectivo' },
+    bank:          { icon:'account_balance',        label:'Banco'   },
+    'credit-card': { icon:'credit_card',            label:'Crédito' },
+    investment:    { icon:'trending_up',            label:'Inversión'}
+  };
+  const $ = s => document.querySelector(s);
+
+  // --- Templates ---
+  const tplAccount = a => `
+    <div class="card" id="acc-${a.id}">
+      <button class="mov-btn" title="Ver movimientos" onclick="openModal('account-movements','${a.id}')">
+        <span class="material-icons">list_alt</span>
+      </button>
+      <div class="material-icons" style="font-size:32px;color:var(--primary);">
+        ${acctTypes[a.type].icon}
       </div>
-    </footer>
+      <div class="card-title">${a.name}</div>
+      <div class="card-value">$${a.balance.toFixed(2)}</div>
+      <div style="margin-top:8px;text-align:right;">
+        <button onclick="editItem('account','${a.id}')"><span class="material-icons">edit</span></button>
+        <button onclick="deleteItem('account','${a.id}')"><span class="material-icons">delete</span></button>
+      </div>
+    </div>`;
 
+  const tplTx = t => {
+    const a = accounts.find(x => x.id === t.accountId) || {};
+    return `
+    <div class="tx-item">
+      <div class="tx-info">
+        <div class="name">${t.name}</div>
+        <div class="meta">${a.name||'—'} · ${new Date(t.date).toLocaleDateString()}</div>
+      </div>
+      <div class="tx-amount ${t.type}">${t.type==='income'?'+':'-'}$${t.amount.toFixed(2)}</div>
+      <div class="tx-actions">
+        <button onclick="toggleItem('transaction','${t.id}')">
+          <span class="material-icons">${t.status==='completed'?'check_circle':'hourglass_empty'}</span>
+        </button>
+        <button onclick="editItem('transaction','${t.id}')"><span class="material-icons">edit</span></button>
+        <button onclick="deleteItem('transaction','${t.id}')"><span class="material-icons">delete</span></button>
+      </div>
+    </div>`;
+  };
 
+  const tplLoan = l => `
+    <div class="card" id="loan-${l.id}">
+      <div class="card-title">${l.name}</div>
+      <div class="card-value">Restan: $${l.remaining.toFixed(2)}</div>
+      <div class="loan-meta">Total: $${l.total.toFixed(2)}</div>
+      <div style="margin-top:8px;text-align:right;">
+        <button class="btn" style="padding:4px 8px;font-size:.8rem;" onclick="openModal('loan-payment','${l.id}')">
+          <span class="material-icons" style="font-size:18px;">payment</span> Abonar
+        </button>
+        <button onclick="openModal('loan-history','${l.id}')">
+          <span class="material-icons">history</span>
+        </button>
+        <button onclick="deleteItem('loan','${l.id}')">
+          <span class="material-icons">delete</span>
+        </button>
+      </div>
+    </div>`;
 
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="js/jquery.min.js"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/jquery.isotope.min.js"></script>
-    <script src="js/fancybox/jquery.fancybox.pack.js"></script>
-    <script src="js/functions.js"></script>
-    <script src="contactform/contactform.js"></script>
+  const tplPayment = (loanId, p) => {
+    const loan = loans.find(l => l.id === loanId);
+    const acc  = accounts.find(a => a.id === p.accountId) || {};
+    return `
+    <div class="tx-item">
+      <div class="tx-info">
+        <div class="name">Abono a "${loan.name}"</div>
+        <div class="meta">${new Date(p.date).toLocaleDateString()} · ${acc.name||'—'}</div>
+      </div>
+      <div class="tx-amount">${p.status==='completed'?'+':'-'}$${p.amount.toFixed(2)}</div>
+      <div class="tx-actions">
+        <button onclick="togglePayment('${loanId}','${p.id}')">
+          <span class="material-icons">${p.status==='completed'?'check_circle':'hourglass_empty'}</span>
+        </button>
+        <button onclick="openModal('loan-payment-edit','${loanId}','${p.id}')">
+          <span class="material-icons">edit</span>
+        </button>
+        <button onclick="deleteLoanPayment('${loanId}','${p.id}')">
+          <span class="material-icons">delete</span>
+        </button>
+      </div>
+    </div>`;
+  };
+
+  // --- Render helpers ---
+  const renderList = (el, arr, fn, empty) =>
+    el.innerHTML = arr.length ? arr.map(fn).join('') : empty;
+
+  function renderAccounts(){
+    renderList($('#accounts-container'), accounts, tplAccount,
+      `<div class="empty"><span class="material-icons">account_balance</span><p>No tienes cuentas</p></div>`);
+  }
+  function renderLoans(){
+    renderList($('#loans-container'), loans, tplLoan,
+      `<div class="empty"><span class="material-icons">payments</span><p>No tienes préstamos</p></div>`);
+  }
+  function renderTxs(){
+    const txs = transactions
+      .filter(t => currentFilter==='all' || t.status===currentFilter)
+      .sort((a,b)=>new Date(b.date)-new Date(a.date));
+    renderList($('#recent-transactions'), txs, tplTx,
+      `<div class="empty"><span class="material-icons">swap_horiz</span><p>No hay movimientos</p></div>`);
+  }
+  function renderTotals(){
+    const total = accounts.reduce((s,a)=>s + a.balance,0).toFixed(2);
+    $('#total-balance-bottom').textContent = `$${total}`;
+  }
+  function saveAll(){
+    localStorage.accounts     = JSON.stringify(accounts);
+    localStorage.transactions = JSON.stringify(transactions);
+    localStorage.loans        = JSON.stringify(loans);
+  }
+  function renderAll(){
+    renderAccounts();
+    renderLoans();
+    renderTxs();
+    renderTotals();
+    saveAll();
+  }
+
+  // --- Modal configuration ---
+  const getModalTitle = type => ({
+    transaction:        editingTransactionId ? 'Editar Movimiento' : 'Nuevo Movimiento',
+    account:            editingAccountId     ? 'Editar Cuenta'    : 'Nueva Cuenta',
+    loan:               editingLoanId        ? 'Editar Préstamo'  : 'Nuevo Préstamo',
+    'loan-payment':     'Abonar Préstamo',
+    'loan-history':     'Historial de Abonos',
+    'loan-payment-edit':'Editar Abono',
+    confirmation:       'Confirmar Eliminación',
+    'account-movements':'Movimientos de Cuenta'
+  })[type];
+
+  const getModalContent = (type,id,payId) => {
+    if(type==='transaction'){
+      return `
+      <div class="form-group"><label>Tipo</label><select id="transaction-type"><option value="income">Ingreso</option><option value="expense">Gasto</option></select></div>
+      <div class="form-group"><label>Estado</label><select id="transaction-status"><option value="completed">Realizada</option><option value="pending">Pendiente</option></select></div>
+      <div class="form-group"><label>Nombre</label><input id="transaction-name"></div>
+      <div class="form-group"><label>Monto</label><input id="transaction-amount" type="number"></div>
+      <div class="form-group"><label>Cuenta</label><select id="transaction-account"></select></div>`;
+    }
+    if(type==='account'){
+      return `
+      <div class="form-group"><label>Nombre</label><input id="account-name"></div>
+      <div class="form-group"><label>Tipo</label><select id="account-type">
+        <option value="cash">Efectivo</option><option value="bank">Banco</option>
+        <option value="credit-card">Crédito</option><option value="investment">Inversión</option>
+      </select></div>
+      <div class="form-group"><label>Saldo Inicial</label><input id="account-initial" type="number" value="0"></div>`;
+    }
+    if(type==='loan'){
+      return `
+      <div class="form-group"><label>Nombre Préstamo</label><input id="loan-name"></div>
+      <div class="form-group"><label>Monto Total</label><input id="loan-total" type="number"></div>`;
+    }
+    if(type==='loan-payment'){
+      const loan = loans.find(l=>l.id===id);
+      return `
+      <div class="form-group"><label>Préstamo</label><input disabled value="${loan.name}"></div>
+      <div class="form-group"><label>Abono</label><input id="loanpay-amount" type="number"></div>
+      <div class="form-group"><label>Cuenta</label><select id="loanpay-account"></select></div>`;
+    }
+    if(type==='loan-history'){
+      const loan = loans.find(l=>l.id===id);
+      if(!loan.payments.length){
+        return `<div class="empty"><span class="material-icons">history</span><p>No hay abonos registrados</p></div>`;
+      }
+      return `<div id="loan-history-list">${loan.payments.map(p=>tplPayment(id,p)).join('')}</div>`;
+    }
+    if(type==='loan-payment-edit'){
+      const loan = loans.find(l=>l.id===id);
+      const p    = loan.payments.find(x=>x.id===payId);
+      return `
+      <div class="form-group"><label>Préstamo</label><input disabled value="${loan.name}"></div>
+      <div class="form-group"><label>Monto</label><input id="editpay-amount" type="number" value="${p.amount}"></div>
+      <div class="form-group"><label>Cuenta</label><select id="editpay-account"></select></div>`;
+    }
+    if(type==='confirmation'){
+      let msg = '';
+      if(itemToDelete.type==='account')
+        msg = `¿Eliminar cuenta "${accounts.find(a=>a.id===itemToDelete.id).name}"?`;
+      else if(itemToDelete.type==='transaction')
+        msg = `¿Eliminar movimiento "${transactions.find(t=>t.id===itemToDelete.id).name}"?`;
+      else if(itemToDelete.type==='loan')
+        msg = `¿Eliminar préstamo "${loans.find(l=>l.id===itemToDelete.id).name}"?`;
+      else if(itemToDelete.type==='payment')
+        msg = `¿Eliminar abono?`;
+      return `<p>${msg}</p>`;
+    }
+    if(type==='account-movements'){
+      const accTxs = transactions.filter(t=>t.accountId===id)
+                                 .sort((a,b)=>new Date(b.date)-new Date(a.date));
+      return accTxs.length
+        ? `<div id="account-movements-list">${accTxs.map(t=>tplTx(t)).join('')}</div>`
+        : `<div class="empty"><span class="material-icons">swap_horiz</span><p>Sin movimientos en esta cuenta</p></div>`;
+    }
+  };
+
+  const getModalFooter = type => ({
+    transaction:         `<button class="btn" onclick="closeModal()">Cancelar</button><button class="btn" onclick="saveTransaction()">Guardar</button>`,
+    account:             `<button class="btn" onclick="closeModal()">Cancelar</button><button class="btn" onclick="saveAccount()">Guardar</button>`,
+    loan:                `<button class="btn" onclick="closeModal()">Cancelar</button><button class="btn" onclick="saveLoan()">Guardar</button>`,
+    'loan-payment':      `<button class="btn" onclick="closeModal()">Cancelar</button><button class="btn" onclick="saveLoanPayment()">Abonar</button>`,
+    'loan-history':      `<button class="btn" onclick="closeModal()">Cerrar</button>`,
+    'loan-payment-edit': `<button class="btn" onclick="closeModal()">Cancelar</button><button class="btn" onclick="saveEditedPayment()">Guardar</button>`,
+    confirmation:        `<button class="btn" onclick="closeModal()">Cancelar</button><button class="btn" onclick="confirmDeletion()">Eliminar</button>`,
+    'account-movements': `<button class="btn" onclick="closeModal()">Cerrar</button>`
+  })[type];
+
+  // --- Abrir / cerrar modal ---
+  window.openModal = (type,id=null,payId=null) => {
+    if(type==='account')            editingAccountId     = id;
+    if(type==='transaction')        editingTransactionId = id;
+    if(['loan','loan-payment','loan-history'].includes(type)) editingLoanId = id;
+    if(type==='loan-payment-edit')  editingPaymentId     = payId;
+
+    $('#modal-title').textContent = getModalTitle(type);
+    $('#modal-body').innerHTML    = getModalContent(type,id,payId);
+    $('#modal-footer').innerHTML  = getModalFooter(type);
+
+    // inicializar selects
+    if(type==='transaction'){
+      const sel = $('#transaction-account');
+      sel.innerHTML = `<option value="">Selecciona cuenta</option>` +
+        accounts.map(a=>`<option value="${a.id}">${a.name}</option>`).join('');
+      if(id){
+        const tx = transactions.find(t=>t.id===id);
+        $('#transaction-name').value   = tx.name;
+        $('#transaction-amount').value = tx.amount;
+        $('#transaction-type').value   = tx.type;
+        $('#transaction-status').value = tx.status;
+        sel.value                     = tx.accountId;
+      }
+    }
+    if(type==='loan-payment'){
+      const sel = $('#loanpay-account');
+      sel.innerHTML = `<option value="">Selecciona cuenta</option>` +
+        accounts.map(a=>`<option value="${a.id}">${a.name}</option>`).join('');
+    }
+    if(type==='loan-payment-edit'){
+      const sel = $('#editpay-account');
+      sel.innerHTML = `<option value="">Selecciona cuenta</option>` +
+        accounts.map(a=>`<option value="${a.id}">${a.name}</option>`).join('');
+      const loan = loans.find(l=>l.id===id);
+      const p    = loan.payments.find(x=>x.id===payId);
+      sel.value = p.accountId;
+    }
+    if(type==='account' && id){
+      const a = accounts.find(a=>a.id===id);
+      $('#account-name').value    = a.name;
+      $('#account-type').value    = a.type;
+      $('#account-initial').value = a.balance;
+    }
+    if(type==='loan' && id){
+      const l = loans.find(l=>l.id===id);
+      $('#loan-name').value  = l.name;
+      $('#loan-total').value = l.total;
+    }
+
+    $('#generic-modal').classList.add('active');
+  };
+  window.closeModal = () => {
+    $('#generic-modal').classList.remove('active');
+    editingAccountId = editingTransactionId = editingLoanId = editingPaymentId = null;
+    itemToDelete = null;
+  };
+
+  // --- Notificaciones ---
+  window.showNotification = (msg,err=false) => {
+    const n = $('#notification');
+    $('#notification-message').textContent = msg;
+    n.classList.toggle('error',err);
+    n.classList.add('show');
+    setTimeout(()=>n.classList.remove('show'),3000);
+  };
+
+  // --- Funciones de guardado ---
+  window.saveAccount = () => {
+    const name = $('#account-name').value.trim();
+    const type = $('#account-type').value;
+    const bal  = parseFloat($('#account-initial').value) || 0;
+    if(!name) return showNotification('Ingresa nombre',true);
+    const acc = { id: editingAccountId||Date.now().toString(), name, type, balance: bal };
+    accounts = editingAccountId
+      ? accounts.map(a=>a.id===editingAccountId? acc : a)
+      : [...accounts, acc];
+    renderAll(); closeModal(); showNotification('Cuenta guardada');
+  };
+
+  window.saveTransaction = () => {
+    const name   = $('#transaction-name').value.trim();
+    const amount = parseFloat($('#transaction-amount').value);
+    const type   = $('#transaction-type').value;
+    const status = $('#transaction-status').value;
+    const accId  = $('#transaction-account').value;
+    if(!name||!amount||!type||!status||!accId) return showNotification('Completa todos los campos',true);
+    const acc = accounts.find(a=>a.id===accId);
+    if(!acc) return showNotification('Cuenta no existe',true);
+
+    if(editingTransactionId){
+      const idx = transactions.findIndex(t=>t.id===editingTransactionId);
+      const old = transactions[idx];
+      if(old.status==='completed'){
+        old.type==='income'? acc.balance -= old.amount : acc.balance += old.amount;
+      }
+      const updated = { ...old, name, amount, type, accountId: accId, status };
+      transactions[idx] = updated;
+      if(status==='completed'){
+        type==='income'? acc.balance += amount : acc.balance -= amount;
+      }
+    } else {
+      const tx = { id: Date.now().toString(), name, amount, type, accountId: accId, status, date: new Date().toISOString() };
+      transactions.push(tx);
+      if(status==='completed'){
+        type==='income'? acc.balance += amount : acc.balance -= amount;
+      }
+    }
+
+    renderAll(); closeModal(); showNotification('Movimiento guardado');
+  };
+
+  window.saveLoan = () => {
+    const name  = $('#loan-name').value.trim();
+    const total = parseFloat($('#loan-total').value);
+    if(!name||!total) return showNotification('Completa todos los campos',true);
+    if(editingLoanId){
+      loans = loans.map(l => l.id===editingLoanId
+        ? { ...l, name, total, remaining: l.remaining + (total - l.total) }
+        : l );
+    } else {
+      loans.push({ id: Date.now().toString(), name, total, remaining: total, payments: [] });
+    }
+    renderAll(); closeModal(); showNotification('Préstamo guardado');
+  };
+
+  window.saveLoanPayment = () => {
+    const amount = parseFloat($('#loanpay-amount').value);
+    const accId  = $('#loanpay-account').value;
+    if(!amount||!accId) return showNotification('Completa todos los campos',true);
+    const acc  = accounts.find(a=>a.id===accId);
+    const loan = loans.find(l=>l.id===editingLoanId);
+    if(!acc||!loan) return showNotification('Error interno',true);
+
+    const payment = { id: Date.now().toString(), amount, date: new Date().toISOString(), accountId: accId, status:'completed' };
+    acc.balance    -= amount;
+    loan.remaining = Math.max(loan.remaining - amount, 0);
+    loan.payments.push(payment);
+
+    renderAll(); closeModal(); showNotification('Abono registrado');
+  };
+
+  window.saveEditedPayment = () => {
+    const amount = parseFloat($('#editpay-amount').value);
+    const accId  = $('#editpay-account').value;
+    const loan   = loans.find(l=>l.id===editingLoanId);
+    const pay    = loan.payments.find(p=>p.id===editingPaymentId);
+    if(!amount||!accId) return showNotification('Completa todos los campos',true);
+
+    // revertir antiguo
+    const oldAcc = accounts.find(a=>a.id===pay.accountId);
+    if(pay.status==='completed') oldAcc.balance += pay.amount;
+
+    // actualizar pago
+    pay.amount    = amount;
+    pay.accountId = accId;
+    pay.date      = new Date().toISOString();
+
+    // aplicar nuevo
+    const newAcc = accounts.find(a=>a.id===accId);
+    if(pay.status==='completed') newAcc.balance -= amount;
+
+    renderAll(); closeModal(); showNotification('Abono editado');
+  };
+
+  // --- Toggle estados ---
+  window.togglePayment = (loanId,payId) => {
+    const loan = loans.find(l=>l.id===loanId);
+    const p    = loan.payments.find(x=>x.id===payId);
+    const acc  = accounts.find(a=>a.id===p.accountId);
+    if(!p||!acc) return;
+    if(p.status==='completed'){
+      p.status     = 'pending';
+      acc.balance += p.amount;
+      loan.remaining += p.amount;
+    } else {
+      p.status     = 'completed';
+      acc.balance -= p.amount;
+      loan.remaining -= p.amount;
+    }
+    renderAll();
+    openModal('loan-history',loanId);
+    showNotification('Estado de abono cambiado');
+  };
+
+  window.toggleItem = (type,id) => {
+    const t = transactions.find(x=>x.id===id);
+    const a = accounts.find(x=>x.id===t.accountId);
+    t.status = t.status==='completed' ? 'pending' : 'completed';
+    a.balance += t.status==='completed'
+      ? (t.type==='income'? t.amount : -t.amount)
+      : (t.type==='income'? -t.amount : t.amount);
+    renderAll(); showNotification('Estado cambiado');
+  };
+
+  // --- Eliminaciones ---
+  window.deleteLoanPayment = (loanId,payId) => {
+    itemToDelete = { type:'payment', loanId, id:payId };
+    openModal('confirmation');
+  };
+
+  const _originalConfirm = window.confirmDeletion;
+  window.confirmDeletion = () => {
+    if(itemToDelete?.type==='payment'){
+      const loan = loans.find(l=>l.id===itemToDelete.loanId);
+      const p    = loan.payments.find(x=>x.id===itemToDelete.id);
+      if(p.status==='completed'){
+        const acc = accounts.find(a=>a.id===p.accountId);
+        acc.balance    += p.amount;
+        loan.remaining += p.amount;
+      }
+      loan.payments = loan.payments.filter(x=>x.id!==itemToDelete.id);
+      renderAll(); closeModal(); showNotification('Abono eliminado');
+    }
+    else if(itemToDelete?.type==='loan'){
+      loans = loans.filter(l=>l.id!==itemToDelete.id);
+      renderAll(); closeModal(); showNotification('Préstamo eliminado');
+    }
+    else {
+      _originalConfirm();
+    }
+  };
+
+  window.editItem   = (type,id) => openModal(type,id);
+  window.deleteItem = (type,id) => { itemToDelete = { type,id }; openModal('confirmation'); };
+  window.filterTransactions = f => { currentFilter = f; renderTxs(); };
+
+  // Al cargar:
+  window.onload = renderAll;
+})();
+</script>
+
 
 </body>
-
 </html>
